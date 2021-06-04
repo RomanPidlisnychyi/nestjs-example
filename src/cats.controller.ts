@@ -3,29 +3,54 @@ import {
   Get,
   Post,
   HttpCode,
-  Header,
   Query,
   Body,
+  Param,
+  Patch,
+  Delete,
+  Res,
+  HttpStatus,
 } from '@nestjs/common';
+import { Response } from 'express';
 import { CatsService } from './cats.service';
+import { CreateCatDto, UpdateCatDto, ListAllCatDto } from './dto';
 
 @Controller('cats')
 export class CatsController {
   constructor(private readonly catsService: CatsService) {}
 
   @Get()
-  findByQuery(@Query('cat') cat) {
-    return this.catsService.findByQuery(cat);
+  findByQuery(@Query() query: ListAllCatDto) {
+    return `This action returns all cats (limit: ${query.limit} items)`;
   }
 
-  findAll(): string {
-    return this.catsService.findAll();
+  @Get(':id')
+  findById(@Param('id') id: string) {
+    return this.catsService.findById(id);
   }
 
   @Post()
-  @Header('Cache-Control', 'none')
   @HttpCode(201)
-  createCat(@Body('name') name): string {
-    return this.catsService.createCat(name);
+  async create(@Res() res: Response, @Body() createCatDto: CreateCatDto) {
+    return res.status(HttpStatus.OK).json({
+      message: 'This action adds a new cat',
+      createCatDto,
+    });
+  }
+
+  @Patch(':id')
+  update(
+    @Res() res: Response,
+    @Param('id') id: string,
+    @Body() updateCatDto: UpdateCatDto,
+  ) {
+    return res
+      .status(HttpStatus.OK)
+      .json({ message: `action updates a #${id} cat`, updateCatDto });
+  }
+
+  @Delete(':id')
+  remove(@Param('id') id: string) {
+    return `This action remove a #${id} cat`;
   }
 }
