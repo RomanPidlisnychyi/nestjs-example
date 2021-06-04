@@ -2,7 +2,6 @@ import {
   Controller,
   Get,
   Post,
-  HttpCode,
   Query,
   Body,
   Param,
@@ -14,29 +13,29 @@ import {
 import { Response } from 'express';
 import { CatsService } from './cats.service';
 import { CreateCatDto, UpdateCatDto, ListAllCatDto } from './dto';
+import { Cat } from './interfaces/cat.interface';
 
 @Controller('cats')
 export class CatsController {
   constructor(private readonly catsService: CatsService) {}
 
-  @Get()
-  findByQuery(@Query() query: ListAllCatDto) {
-    return `This action returns all cats (limit: ${query.limit} items)`;
-  }
-
-  @Get(':id')
-  findById(@Param('id') id: string) {
-    return this.catsService.findById(id);
-  }
-
   @Post()
-  @HttpCode(201)
-  async create(@Res() res: Response, @Body() createCatDto: CreateCatDto) {
-    return res.status(HttpStatus.OK).json({
-      message: 'This action adds a new cat',
-      createCatDto,
-    });
+  async create(@Body() createCatDto: CreateCatDto) {
+    this.catsService.create(createCatDto);
   }
+
+  // @Get()
+  // async findAll();
+
+  // @Get()
+  // findByQuery(@Query() query: ListAllCatDto) {
+  //   return `This action returns all cats (limit: ${query.limit} items)`;
+  // }
+
+  // @Get(':id')
+  // findById(@Param('id') id: string) {
+  //   return this.catsService.findById(id);
+  // }
 
   @Patch(':id')
   update(

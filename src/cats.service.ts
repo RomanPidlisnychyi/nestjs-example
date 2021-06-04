@@ -1,20 +1,15 @@
 import { Injectable } from '@nestjs/common';
+import { Cat } from './interfaces/cat.interface';
 
 @Injectable()
 export class CatsService {
-  findById(id): string {
-    return `It's Cat with id: ${id}`;
+  private readonly cats: Cat[] = [];
+
+  create(cat: Cat) {
+    this.cats.push(cat);
   }
 
-  findByQuery(query): string {
-    return `This action returns cats by this query ${query}`;
-  }
-
-  findAll(): string {
-    return 'This action returns all cats';
-  }
-
-  create(name): string {
-    return `Created new Cat with name: ${name}!`;
+  findAll(): Cat[] {
+    return this.cats;
   }
 }
