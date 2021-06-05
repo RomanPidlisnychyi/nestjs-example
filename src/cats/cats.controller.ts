@@ -2,7 +2,6 @@ import {
   Controller,
   Get,
   Post,
-  Query,
   Body,
   Param,
   Patch,
@@ -13,19 +12,23 @@ import {
 import { Response } from 'express';
 import { CatsService } from './cats.service';
 import { CreateCatDto, UpdateCatDto, ListAllCatDto } from './dto';
-import { Cat } from './interfaces/cat.interface';
 
 @Controller('cats')
 export class CatsController {
   constructor(private readonly catsService: CatsService) {}
 
   @Post()
-  async create(@Body() createCatDto: CreateCatDto) {
-    this.catsService.create(createCatDto);
+  async create(@Body() createCatDto: CreateCatDto, @Res() res: Response) {
+    const createdCat = await this.catsService.create(createCatDto);
+
+    return res.status(201).json(createdCat);
   }
 
-  // @Get()
-  // async findAll();
+  @Get()
+  async findAll(@Res() res: Response) {
+    const allCats = this.catsService.findAll();
+    res.status(200).json(allCats);
+  }
 
   // @Get()
   // findByQuery(@Query() query: ListAllCatDto) {
@@ -49,7 +52,13 @@ export class CatsController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return `This action remove a #${id} cat`;
+  remove(@Param('id') id: string, @Res() res: Response) {
+    const result = this.catsService.delete(id);
+
+    return res.status(HttpStatus.OK).json({
+      message: result
+        ? `Cat #${result} deleted successful`
+        : 'Something is wrong',
+    });
   }
 }
