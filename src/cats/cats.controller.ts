@@ -8,17 +8,24 @@ import {
   Delete,
   Res,
   HttpStatus,
+  ParseIntPipe,
+  UsePipes,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { CatsService } from './cats.service';
 import { CreateCatDto, UpdateCatDto, ListAllCatDto } from './dto';
+import { ValidationPipe } from '../pipes/validation.pipe';
 
 @Controller('cats')
 export class CatsController {
   constructor(private readonly catsService: CatsService) {}
 
   @Post()
-  async create(@Body() createCatDto: CreateCatDto, @Res() res: Response) {
+  // @UsePipes(new JoiValidationPipe()
+  async create(
+    @Body(new ValidationPipe()) createCatDto: CreateCatDto,
+    @Res() res: Response,
+  ) {
     const createdCat = await this.catsService.create(createCatDto);
 
     return res.status(201).json(createdCat);
@@ -28,6 +35,12 @@ export class CatsController {
   async findAll(@Res() res: Response) {
     const allCats = this.catsService.findAll();
     res.status(200).json(allCats);
+  }
+
+  @Get(':id')
+  async findOne(@Res() res: Response, @Param('id', ParseIntPipe) id: number) {
+    const cat = this.catsService.findOne(id);
+    res.status(200).json(cat);
   }
 
   // @Get()
@@ -52,7 +65,7 @@ export class CatsController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string, @Res() res: Response) {
+  remove(@Param('id', ParseIntPipe) id: number, @Res() res: Response) {
     const result = this.catsService.delete(id);
 
     return res.status(HttpStatus.OK).json({

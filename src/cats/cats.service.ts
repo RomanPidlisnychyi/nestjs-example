@@ -13,10 +13,10 @@ export class CatsService {
     return cat;
   }
 
-  delete(id: string) {
+  delete(id: number) {
     let result;
     this.cats.forEach((cat: Cat, index: number) => {
-      if (cat.id === Number(id)) {
+      if (cat.id === id) {
         this.cats.splice(index, 1);
         result = id;
       }
@@ -27,5 +27,9 @@ export class CatsService {
 
   findAll(): Cat[] {
     return this.cats;
+  }
+
+  findOne(id: number): Cat {
+    return this.cats.find((cat) => cat.id === id);
   }
 }
