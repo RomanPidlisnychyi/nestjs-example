@@ -16,7 +16,7 @@ export class CatsService {
   delete(id: string) {
     let result;
     this.cats.forEach((cat: Cat, index: number) => {
-      if (cat.id === Number(id)) {
+      if (cat.id === parseFloat(id)) {
         this.cats.splice(index, 1);
         result = id;
       }
