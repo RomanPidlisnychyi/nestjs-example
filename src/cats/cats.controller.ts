@@ -8,24 +8,35 @@ import {
   Delete,
   Res,
   HttpStatus,
+  HttpException,
+  UseFilters,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { CatsService } from './cats.service';
 import { CreateCatDto, UpdateCatDto, ListAllCatDto } from './dto';
+import { ForbiddenException } from '../exceptions/forbidden.exception';
+import { HttpExceptionFilter } from '../exceptions/http-exception.filter';
 
 @Controller('cats')
+@UseFilters(new HttpExceptionFilter())
 export class CatsController {
   constructor(private readonly catsService: CatsService) {}
 
   @Post()
+  // @UseFilters(new HttpExceptionFilter())
   async create(@Body() createCatDto: CreateCatDto, @Res() res: Response) {
     const createdCat = await this.catsService.create(createCatDto);
-
     return res.status(201).json(createdCat);
   }
 
   @Get()
   async findAll(@Res() res: Response) {
+    // throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
+    // throw new HttpException(
+    //   { error: 'This is a castom message', status: HttpStatus.FORBIDDEN },
+    //   HttpStatus.FORBIDDEN,
+    // );
+    throw new ForbiddenException();
     const allCats = this.catsService.findAll();
     res.status(200).json(allCats);
   }
