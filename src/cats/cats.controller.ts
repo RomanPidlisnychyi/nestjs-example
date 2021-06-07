@@ -8,14 +8,13 @@ import {
   Delete,
   Res,
   HttpStatus,
-  HttpException,
-  UseFilters,
+  ParseIntPipe,
+  UsePipes,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { CatsService } from './cats.service';
-import { CreateCatDto, UpdateCatDto, ListAllCatDto } from './dto';
-import { ForbiddenException } from '../exceptions/forbidden.exception';
-import { HttpExceptionFilter } from '../exceptions/http-exception.filter';
+import { CreateCatDto, UpdateCatDto } from './dto';
+import { ValidationPipe } from '../pipes/validation.pipe';
 
 @Controller('cats')
 @UseFilters(new HttpExceptionFilter())
@@ -23,10 +22,25 @@ export class CatsController {
   constructor(private readonly catsService: CatsService) {}
 
   @Post()
-  // @UseFilters(new HttpExceptionFilter())
-  async create(@Body() createCatDto: CreateCatDto, @Res() res: Response) {
+  // @UsePipes(new JoiValidationPipe()
+  async create(
+    @Body(new ValidationPipe()) createCatDto: CreateCatDto,
+    @Res() res: Response,
+  ) {
+
     const createdCat = await this.catsService.create(createCatDto);
     return res.status(201).json(createdCat);
+  }
+
+  @Patch(':id')
+  async update(
+    @Res() res: Response,
+    @Param('id', ParseIntPipe) id: number,
+    @Body(new ValidationPipe()) updateCatDto: UpdateCatDto,
+  ) {
+    const updatedCat = await this.catsService.update(id, updateCatDto);
+
+    return res.status(HttpStatus.OK).json(updatedCat);
   }
 
   @Get()
@@ -41,6 +55,12 @@ export class CatsController {
     res.status(200).json(allCats);
   }
 
+  @Get(':id')
+  async findOne(@Res() res: Response, @Param('id', ParseIntPipe) id: number) {
+    const cat = this.catsService.findOne(id);
+    res.status(200).json(cat);
+  }
+
   // @Get()
   // findByQuery(@Query() query: ListAllCatDto) {
   //   return `This action returns all cats (limit: ${query.limit} items)`;
@@ -51,19 +71,8 @@ export class CatsController {
   //   return this.catsService.findById(id);
   // }
 
-  @Patch(':id')
-  update(
-    @Res() res: Response,
-    @Param('id') id: string,
-    @Body() updateCatDto: UpdateCatDto,
-  ) {
-    return res
-      .status(HttpStatus.OK)
-      .json({ message: `action updates a #${id} cat`, updateCatDto });
-  }
-
   @Delete(':id')
-  remove(@Param('id') id: string, @Res() res: Response) {
+  remove(@Param('id', ParseIntPipe) id: number, @Res() res: Response) {
     const result = this.catsService.delete(id);
 
     return res.status(HttpStatus.OK).json({
