@@ -17,6 +17,7 @@ import { CreateCatDto, UpdateCatDto } from './dto';
 import { ValidationPipe } from '../pipes/validation.pipe';
 
 @Controller('cats')
+@UseFilters(new HttpExceptionFilter())
 export class CatsController {
   constructor(private readonly catsService: CatsService) {}
 
@@ -26,8 +27,8 @@ export class CatsController {
     @Body(new ValidationPipe()) createCatDto: CreateCatDto,
     @Res() res: Response,
   ) {
-    const createdCat = await this.catsService.create(createCatDto);
 
+    const createdCat = await this.catsService.create(createCatDto);
     return res.status(201).json(createdCat);
   }
 
@@ -44,6 +45,12 @@ export class CatsController {
 
   @Get()
   async findAll(@Res() res: Response) {
+    // throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
+    // throw new HttpException(
+    //   { error: 'This is a castom message', status: HttpStatus.FORBIDDEN },
+    //   HttpStatus.FORBIDDEN,
+    // );
+    throw new ForbiddenException();
     const allCats = this.catsService.findAll();
     res.status(200).json(allCats);
   }
