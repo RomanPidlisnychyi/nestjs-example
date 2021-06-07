@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Cat } from './interfaces/cat.interface';
 import { idGenerator } from '../helpers/idGenerator';
+import { UpdateCatDto } from './dto/update-cat.dto';
 
 @Injectable()
 export class CatsService {
@@ -11,6 +12,11 @@ export class CatsService {
     this.cats.push(cat);
 
     return cat;
+  }
+
+  update(id: number, updateCatDto: UpdateCatDto) {
+    // this.cats.length = 0;
+    console.log('updateCatDto', updateCatDto);
   }
 
   delete(id: number) {

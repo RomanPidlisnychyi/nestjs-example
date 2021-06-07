@@ -13,7 +13,7 @@ import {
 } from '@nestjs/common';
 import { Response } from 'express';
 import { CatsService } from './cats.service';
-import { CreateCatDto, UpdateCatDto, ListAllCatDto } from './dto';
+import { CreateCatDto, UpdateCatDto } from './dto';
 import { ValidationPipe } from '../pipes/validation.pipe';
 
 @Controller('cats')
@@ -29,6 +29,17 @@ export class CatsController {
     const createdCat = await this.catsService.create(createCatDto);
 
     return res.status(201).json(createdCat);
+  }
+
+  @Patch(':id')
+  async update(
+    @Res() res: Response,
+    @Param('id', ParseIntPipe) id: number,
+    @Body(new ValidationPipe()) updateCatDto: UpdateCatDto,
+  ) {
+    const updatedCat = await this.catsService.update(id, updateCatDto);
+
+    return res.status(HttpStatus.OK).json(updatedCat);
   }
 
   @Get()
@@ -52,17 +63,6 @@ export class CatsController {
   // findById(@Param('id') id: string) {
   //   return this.catsService.findById(id);
   // }
-
-  @Patch(':id')
-  update(
-    @Res() res: Response,
-    @Param('id') id: string,
-    @Body() updateCatDto: UpdateCatDto,
-  ) {
-    return res
-      .status(HttpStatus.OK)
-      .json({ message: `action updates a #${id} cat`, updateCatDto });
-  }
 
   @Delete(':id')
   remove(@Param('id', ParseIntPipe) id: number, @Res() res: Response) {

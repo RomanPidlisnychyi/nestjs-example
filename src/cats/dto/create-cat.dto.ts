@@ -1,6 +1,6 @@
 import { IsString, IsInt } from 'class-validator';
 
-export default class CreateCatDto {
+export class CreateCatDto {
   @IsString()
   name: string;
 
