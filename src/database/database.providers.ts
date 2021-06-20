@@ -12,8 +12,8 @@ export const databaseProviders = [
         username: 'lucky',
         password: 'lucky',
         database: 'testing',
-        synchronize: false,
-        logging: true,
+        synchronize: false, // if you need update migrations - true
+        logging: true, // if you need see queries - true
         entities: [join(__dirname, '/../**/*{.ts,.js}')],
         migrations: [join(__dirname, '../migrations/*')],
         cli: {
