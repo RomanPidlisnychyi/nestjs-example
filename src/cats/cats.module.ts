@@ -1,15 +1,13 @@
 import { Module } from '@nestjs/common';
+import { DatabaseModule } from '../database/database.module';
+import { catProviders } from './cat.providers';
 import { CatsController } from './cats.controller';
 import { CatsService } from './cats.service';
 
 @Module({
+  imports: [DatabaseModule],
   controllers: [CatsController],
-  providers: [CatsService],
+  providers: [...catProviders, CatsService],
   exports: [CatsService],
 })
 export class CatsModule {}
-
-// without exports example
-// export class CatsModule {
-//   constructor(private catsService: CatsService) {}
-// }

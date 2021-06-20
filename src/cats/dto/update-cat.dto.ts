@@ -1,6 +1,7 @@
-import { IsString, IsInt } from 'class-validator';
+import { IsString, IsInt, IsDefined } from 'class-validator';
 
 export class UpdateCatDto {
+  @IsDefined()
   @IsString()
   name?: string;
 
