@@ -1,3 +1,5 @@
+import { config } from 'dotenv';
+config();
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 
@@ -5,7 +7,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   await app.listen(3000);
 }
-bootstrap();
+bootstrap().catch((err) => console.log(err));
 
 // global-scoped filter
 // it is the same with 8 row

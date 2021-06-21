@@ -1,10 +1,11 @@
 import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 import { UserRoles } from '../enums/user-roles.enum';
+import { IsEnum } from 'class-validator';
 
 @Entity()
 export class User {
   @PrimaryGeneratedColumn('uuid')
-  id: number;
+  id: string;
 
   @Column({
     transformer: {
@@ -15,13 +16,14 @@ export class User {
   })
   email: string;
 
-  @Column()
+  @Column({ nullable: false })
   name: string;
 
-  @Column()
+  @Column({ nullable: false })
   password: string;
 
   @Column({ type: 'enum', enum: UserRoles, default: UserRoles.USER })
+  @IsEnum({ each: true })
   role: UserRoles;
 
   @Column('int', { array: true, nullable: true })

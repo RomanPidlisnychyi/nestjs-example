@@ -6,26 +6,39 @@ import {
   Body,
   Res,
   Param,
-  ParseIntPipe,
+  ParseUUIDPipe,
   Req,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { UserService } from './user.service';
-import { CreateUserRequest } from '../dto';
+import { CreateUserRequest, LoginUserRequest } from '../dto';
+import { ValidationPipe } from '../pipes/validation.pipe';
 
 @Controller('users')
 export class UserController {
   constructor(private readonly usersService: UserService) {}
 
-  @Post()
-  async create(@Body() user: CreateUserRequest, @Res() res: Response) {
-    const newUser = await this.usersService.create(user);
+  @Post('register')
+  async create(
+    @Body(new ValidationPipe()) dto: CreateUserRequest,
+    @Res() res: Response,
+  ) {
+    const { name, email } = await this.usersService.create(dto);
 
-    return res.status(201).json(newUser);
+    return res.status(201).json({ name, email });
+  }
+
+  @Post('login')
+  async login(
+    @Body(new ValidationPipe()) dto: LoginUserRequest,
+    @Res() res: Response,
+  ) {
+    await this.usersService.login(dto);
+    return res.status(201).send();
   }
 
   @Delete('/:id')
-  async delete(@Param('id', ParseIntPipe) id: number, @Res() res: Response) {
+  async delete(@Param('id', ParseUUIDPipe) id: string, @Res() res: Response) {
     await this.usersService.delete(id);
 
     return res.status(204).send();
