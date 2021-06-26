@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Req } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from '../user/user.service';
 import { CreateUserRequest, LoginUserRequest } from '../dto';
@@ -19,16 +19,35 @@ export class AuthService {
 
   async validateUser(dto: LoginUserRequest): Promise<any> {
     const { email } = dto;
-    const user = await this.userService.findUser(email);
+    const user = await this.userService.findUser({ email });
     await bcryptServices.compare(dto.password, user.password);
     const { password, ...result } = user;
     return result;
   }
 
   async login(user: any): Promise<any> {
-    const payload = { id: user.id };
+    const { id, role, stars, ...rest } = user;
+    const payload = { id };
     return {
-      access_token: this.jwtService.sign(payload),
+      ...rest,
+      token: this.jwtService.sign(payload),
     };
+  }
+
+  async getUser(authorization) {
+    // const token = authorization.split(' ')[1];
+    // // console.log('token', token);
+    //
+    // let isTokenValid;
+    //
+    // try {
+    //   isTokenValid = await this.jwtService.verify(token, {
+    //     secret: process.env.JWT_SECRET,
+    //   });
+    // } catch (err) {
+    //   console.log(err);
+    // }
+    // console.log('isTokenValid', isTokenValid);
+    // const resuslt = await this.jwtService.verifyAsync();
   }
 }

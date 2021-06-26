@@ -5,6 +5,7 @@ import {
   UseGuards,
   Request,
   Body,
+  Headers,
 } from '@nestjs/common';
 import { AppService } from './app.service';
 import { LocalAuthGuard } from './auth/local-auth.guard';
@@ -22,7 +23,7 @@ export class AppController {
   @UseGuards(LocalAuthGuard)
   @Post('auth/login')
   async login(@Request() req) {
-    return req.user;
+    return this.authService.login(req.user);
   }
 
   @Post('auth/register')
@@ -37,7 +38,7 @@ export class AppController {
   }
 
   @Get()
-  getHello(): string {
-    return this.appService.getHello();
+  getHello(@Headers('authorization') authorization) {
+    return this.authService.getUser(authorization);
   }
 }

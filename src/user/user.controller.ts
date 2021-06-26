@@ -28,14 +28,14 @@ export class UserController {
     return res.status(201).json({ name, email });
   }
 
-  @Post('login')
-  async login(
-    @Body(new ValidationPipe()) dto: LoginUserRequest,
-    @Res() res: Response,
-  ) {
-    await this.usersService.login(dto);
-    return res.status(201).send();
-  }
+  // @Post('login')
+  // async login(
+  //   @Body(new ValidationPipe()) dto: LoginUserRequest,
+  //   @Res() res: Response,
+  // ) {
+  //   await this.usersService.login(dto);
+  //   return res.status(201).send();
+  // }
 
   @Delete('/:id')
   async delete(@Param('id', ParseUUIDPipe) id: string, @Res() res: Response) {
