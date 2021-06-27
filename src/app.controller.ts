@@ -15,7 +15,6 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { AuthGuard } from './guard';
-import { AppService } from './app.service';
 import {
   CreateUserRequest,
   CreateUserResponse,
@@ -30,10 +29,7 @@ import { User } from './decorators';
 @ApiTags('auth')
 @ApiBearerAuth()
 export class AppController {
-  constructor(
-    private readonly appService: AppService,
-    private readonly authService: AuthService,
-  ) {}
+  constructor(private readonly authService: AuthService) {}
 
   @Post('login')
   @ApiOperation({ operationId: 'login' })
