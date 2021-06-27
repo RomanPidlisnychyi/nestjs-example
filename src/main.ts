@@ -1,9 +1,10 @@
 import { config } from 'dotenv';
 config();
 import { NestFactory } from '@nestjs/core';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
-import { authorized } from './middleware/authorized';
+import { authorized } from './middleware';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -13,21 +14,15 @@ async function bootstrap() {
       disableErrorMessages: true,
     }),
   );
+  const options = new DocumentBuilder()
+    .setTitle('NEST.JS-EXAMPLE - API')
+    .setDescription('API Gateway')
+    .setVersion('1.0')
+    .addBearerAuth()
+    .build();
+  const document = SwaggerModule.createDocument(app, options);
+  SwaggerModule.setup('api', app, document);
+
   await app.listen(3000);
 }
 bootstrap().catch((err) => console.log(err));
-
-// global-scoped filter
-// it is the same with 8 row
-// import { Module } from '@nestjs/common';
-// import { APP_FILTER } from '@nestjs/core';
-//
-// @Module({
-//   providers: [
-//     {
-//       provide: APP_FILTER,
-//       useClass: HttpExceptionFilter,
-//     },
-//   ],
-// })
-// export class AppModule {}

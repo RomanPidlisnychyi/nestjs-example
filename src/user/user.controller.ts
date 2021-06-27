@@ -1,52 +1,30 @@
 import {
   Controller,
   Get,
-  Post,
   Delete,
-  Body,
-  Res,
   Param,
   ParseUUIDPipe,
-  Req,
+  UseGuards,
 } from '@nestjs/common';
-import { Response } from 'express';
 import { UserService } from './user.service';
-import { CreateUserRequest, LoginUserRequest } from '../dto';
-import { ValidationPipe } from '../pipes/validation.pipe';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { RolesAuthGuard } from '../guard';
 
 @Controller('users')
+@ApiTags('users')
+@ApiBearerAuth()
 export class UserController {
   constructor(private readonly usersService: UserService) {}
 
-  @Post('register')
-  async create(
-    @Body(new ValidationPipe()) dto: CreateUserRequest,
-    @Res() res: Response,
-  ) {
-    const { name, email } = await this.usersService.create(dto);
-
-    return res.status(201).json({ name, email });
-  }
-
-  // @Post('login')
-  // async login(
-  //   @Body(new ValidationPipe()) dto: LoginUserRequest,
-  //   @Res() res: Response,
-  // ) {
-  //   await this.usersService.login(dto);
-  //   return res.status(201).send();
-  // }
-
   @Delete('/:id')
-  async delete(@Param('id', ParseUUIDPipe) id: string, @Res() res: Response) {
-    await this.usersService.delete(id);
-
-    return res.status(204).send();
+  @UseGuards(RolesAuthGuard)
+  async delete(@Param('id', ParseUUIDPipe) id: string) {
+    return this.usersService.delete(id);
   }
 
   @Get()
-  async findAll(@Res() res: Response, @Req() req) {
-    const allUsers = await this.usersService.findAll();
-    res.status(201).json(allUsers);
+  @UseGuards(RolesAuthGuard)
+  async findAll() {
+    return this.usersService.findAll();
   }
 }

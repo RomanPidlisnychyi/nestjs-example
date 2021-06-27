@@ -2,8 +2,11 @@ import { Controller, Post, Get, Body, Res } from '@nestjs/common';
 import { Response } from 'express';
 import { CatsService } from './cats.service';
 import { CreateCatDto } from '../dto';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
 @Controller('cats')
+@ApiTags('cats')
+@ApiBearerAuth()
 export class CatsController {
   constructor(private readonly catsService: CatsService) {}
 

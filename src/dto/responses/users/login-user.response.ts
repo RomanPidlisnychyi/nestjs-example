@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { IsString, IsEmail, Length } from 'class-validator';
 
 @Injectable()
-export class CreateUserRequest {
+export class LoginUserResponse {
   @ApiProperty({ example: 'example@email.com' })
   @IsEmail()
   email: string;
@@ -13,8 +13,10 @@ export class CreateUserRequest {
   @Length(1, 32)
   name: string;
 
-  @ApiProperty({ example: 'qwerty' })
+  @ApiProperty({
+    example:
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImRiY2UzNTRkLWYwYzktNDAyMS05ZDljLTU3OWYxNmM3MjMyOSIsImlhdCI6MTYyNDc3Mzk5MSwiZXhwIjoxNjI0ODYwMzkxfQ.R_UzeTElMuky2bPsEJ7UI8z3E-dCmcYR4pC0UgJ1Ngo',
+  })
   @IsString()
-  @Length(6, 32)
-  password: string;
+  token: string;
 }

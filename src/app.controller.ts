@@ -2,45 +2,65 @@ import {
   Controller,
   Get,
   Post,
-  UseGuards,
-  Request,
   Body,
-  UnauthorizedException,
+  HttpStatus,
+  HttpCode,
+  UseGuards,
 } from '@nestjs/common';
+import {
+  ApiBadRequestResponse,
+  ApiBearerAuth,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+} from '@nestjs/swagger';
+import { AuthGuard } from './guard';
 import { AppService } from './app.service';
-import { LocalAuthGuard } from './auth/local-auth.guard';
-import { JwtAuthGuard } from './auth/jwt-auth.guard';
-import { CreateUserRequest } from './dto/requests/users';
-import { AuthService } from './auth/auth.service';
-import { User } from './decorators/user.decorator';
-import { AuthorizedUser } from './decorators/authorized-user.decorator';
+import {
+  CreateUserRequest,
+  CreateUserResponse,
+  LoginUserRequest,
+  LoginUserResponse,
+  UserResponse,
+} from './dto';
+import { AuthService } from './auth';
+import { User } from './decorators';
 
-@Controller()
+@Controller('auth')
+@ApiTags('auth')
+@ApiBearerAuth()
 export class AppController {
   constructor(
     private readonly appService: AppService,
     private readonly authService: AuthService,
   ) {}
 
-  @UseGuards(LocalAuthGuard)
-  @Post('auth/login')
-  async login(@User() user) {
-    return this.authService.login(user);
+  @Post('login')
+  @ApiOperation({ operationId: 'login' })
+  @ApiOkResponse({ type: LoginUserResponse })
+  @ApiBadRequestResponse({ description: 'Login error.' })
+  @HttpCode(HttpStatus.OK)
+  async login(@Body() dto: LoginUserRequest) {
+    return this.authService.login(dto);
   }
 
-  @Post('auth/register')
-  async register(@Body() dto: CreateUserRequest, @Request() req) {
+  @Post('register')
+  @ApiOperation({ operationId: 'register' })
+  @ApiOkResponse({ type: CreateUserResponse })
+  @ApiBadRequestResponse({ description: 'Registration error.' })
+  @HttpCode(HttpStatus.OK)
+  async register(@Body() dto: CreateUserRequest): Promise<CreateUserResponse> {
     return this.authService.register(dto);
   }
 
-  @UseGuards(JwtAuthGuard)
   @Get('profile')
-  getProfile(@User() user) {
-    return user;
-  }
-
-  @Get()
-  getHello(@AuthorizedUser() user) {
-    return user;
+  @UseGuards(AuthGuard)
+  @ApiOperation({ operationId: 'profile' })
+  @ApiOkResponse({ type: UserResponse })
+  @ApiBadRequestResponse({ description: 'Registration error.' })
+  @HttpCode(HttpStatus.OK)
+  getProfile(@User() user): Promise<UserResponse> {
+    const { id, password, ...rest } = user;
+    return rest;
   }
 }

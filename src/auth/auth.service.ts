@@ -1,8 +1,9 @@
-import { Injectable, Req } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from '../user/user.service';
 import { CreateUserRequest, LoginUserRequest } from '../dto';
 import { bcryptServices } from '../helpers/bcryptServices';
+import { CreateUserResponse } from '../dto/responses/users/create-user.response';
 
 @Injectable()
 export class AuthService {
@@ -11,43 +12,32 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async register(dto: CreateUserRequest): Promise<any> {
+  async register(dto: CreateUserRequest): Promise<CreateUserResponse> {
     const hash = await bcryptServices.hash(dto.password);
 
-    return await this.userService.create({ ...dto, password: hash });
+    await this.userService.create({ ...dto, password: hash });
+    return { message: 'success' };
   }
 
   async validateUser(dto: LoginUserRequest): Promise<any> {
     const { email } = dto;
     const user = await this.userService.findUser({ email });
+    if (!user) {
+      throw new NotFoundException();
+    }
+
     await bcryptServices.compare(dto.password, user.password);
     const { password, ...result } = user;
     return result;
   }
 
-  async login(user: any): Promise<any> {
+  async login(dto: LoginUserRequest): Promise<any> {
+    const user = await this.validateUser(dto);
     const { id, role, stars, ...rest } = user;
     const payload = { id };
     return {
       ...rest,
       token: this.jwtService.sign(payload),
     };
-  }
-
-  async getUser(authorization) {
-    // const token = authorization.split(' ')[1];
-    // // console.log('token', token);
-    //
-    // let isTokenValid;
-    //
-    // try {
-    //   isTokenValid = await this.jwtService.verify(token, {
-    //     secret: process.env.JWT_SECRET,
-    //   });
-    // } catch (err) {
-    //   console.log(err);
-    // }
-    // console.log('isTokenValid', isTokenValid);
-    // const resuslt = await this.jwtService.verifyAsync();
   }
 }
