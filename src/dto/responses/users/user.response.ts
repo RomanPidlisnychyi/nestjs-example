@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsString, IsEmail, IsEnum } from 'class-validator';
-import { UserRoles, UserStars } from '../../../enums';
+import { USER_ROLES, USER_STARS } from '../../../enums';
 
 export class UserResponse {
   @ApiProperty({ example: 'example@email.com' })
@@ -11,11 +11,11 @@ export class UserResponse {
   @IsString()
   name: string;
 
-  @ApiProperty({ enum: UserRoles, example: UserRoles.ADMIN })
-  @IsEnum({ each: true })
-  role: UserRoles;
+  @ApiProperty({ enum: USER_ROLES, example: USER_ROLES.ADMIN })
+  @IsEnum(USER_ROLES, { each: true })
+  role: USER_ROLES;
 
-  @ApiProperty({ enum: UserStars, example: [UserStars.ONE] })
-  @IsEnum({ each: true })
-  stars: UserStars[] | null;
+  @ApiProperty({ enum: USER_STARS, example: [USER_STARS.ONE] })
+  @IsEnum(USER_STARS, { each: true })
+  stars: USER_STARS[] | null;
 }

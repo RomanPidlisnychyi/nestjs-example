@@ -1,4 +1,4 @@
-export enum UserStars {
+export enum USER_STARS {
   ONE = 'ONE',
   TWO = 'TWO',
   THREE = 'THREE',

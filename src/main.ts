@@ -3,17 +3,14 @@ config();
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
-import { ValidationPipe } from '@nestjs/common';
+// import { ValidationPipe } from '@nestjs/common';
 import { authorized } from './middleware';
+import { ValidationPipe } from './pipes';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.use(authorized);
-  app.useGlobalPipes(
-    new ValidationPipe({
-      disableErrorMessages: true,
-    }),
-  );
+  // app.useGlobalPipes(new ValidationPipe());
   const options = new DocumentBuilder()
     .setTitle('NEST.JS-EXAMPLE - API')
     .setDescription('API Gateway')

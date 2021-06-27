@@ -1,0 +1,5 @@
+export enum APARTMENT_TYPES {
+  SUITES = 'SUITES',
+  STUDIO = 'STUDIO',
+  TWIN = 'TWIN',
+}
