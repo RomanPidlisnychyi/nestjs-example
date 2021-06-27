@@ -5,13 +5,15 @@ import {
   UseGuards,
   Request,
   Body,
-  Headers,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { AppService } from './app.service';
 import { LocalAuthGuard } from './auth/local-auth.guard';
 import { JwtAuthGuard } from './auth/jwt-auth.guard';
 import { CreateUserRequest } from './dto/requests/users';
 import { AuthService } from './auth/auth.service';
+import { User } from './decorators/user.decorator';
+import { AuthorizedUser } from './decorators/authorized-user.decorator';
 
 @Controller()
 export class AppController {
@@ -22,8 +24,8 @@ export class AppController {
 
   @UseGuards(LocalAuthGuard)
   @Post('auth/login')
-  async login(@Request() req) {
-    return this.authService.login(req.user);
+  async login(@User() user) {
+    return this.authService.login(user);
   }
 
   @Post('auth/register')
@@ -33,12 +35,12 @@ export class AppController {
 
   @UseGuards(JwtAuthGuard)
   @Get('profile')
-  getProfile(@Request() req) {
-    return req.user;
+  getProfile(@User() user) {
+    return user;
   }
 
   @Get()
-  getHello(@Headers('authorization') authorization) {
-    return this.authService.getUser(authorization);
+  getHello(@AuthorizedUser() user) {
+    return user;
   }
 }
