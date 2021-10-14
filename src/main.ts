@@ -9,7 +9,7 @@ import { ValidationPipe } from './pipes';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  app.use(authorized);
+  // app.use(authorized);
   // app.useGlobalPipes(new ValidationPipe());
   const options = new DocumentBuilder()
     .setTitle('NEST.JS-EXAMPLE - API')

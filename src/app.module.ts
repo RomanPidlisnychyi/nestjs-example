@@ -5,7 +5,8 @@ import { ApartmentModule } from './apartament';
 import { AppController } from './app.controller';
 
 @Module({
-  imports: [UserModule, AuthModule, ApartmentModule],
+  // imports: [UserModule, AuthModule, ApartmentModule],
+  imports: [AuthModule, UserModule],
   controllers: [AppController],
 })
 export class AppModule {}

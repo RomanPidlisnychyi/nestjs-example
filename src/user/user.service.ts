@@ -26,4 +26,21 @@ export class UserService {
   async findAll() {
     return this.userRepository.find();
   }
+
+  async findOne(userName: string) {
+    const users = [
+      {
+        id: 1,
+        name: 'Lucky',
+        password: '1111',
+      },
+      {
+        id: 2,
+        name: 'Roma',
+        password: '2222',
+      },
+    ];
+
+    return users.find((user) => user.name === userName);
+  }
 }

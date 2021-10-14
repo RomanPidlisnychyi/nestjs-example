@@ -7,10 +7,7 @@ import { CreateUserResponse } from '../dto/responses/users/create-user.response'
 
 @Injectable()
 export class AuthService {
-  constructor(
-    private userService: UserService,
-    private jwtService: JwtService,
-  ) {}
+  constructor(private userService: UserService, private jwtService: JwtService) {}
 
   async register(dto: CreateUserRequest): Promise<CreateUserResponse> {
     const hash = await bcryptServices.hash(dto.password);
@@ -19,25 +16,40 @@ export class AuthService {
     return { message: 'success' };
   }
 
-  async validateUser(dto: LoginUserRequest): Promise<any> {
-    const { email } = dto;
-    const user = await this.userService.findUser({ email });
-    if (!user) {
-      throw new NotFoundException();
+  async getUserByName(dto): Promise<any> {
+    console.log('dto', dto);
+    return 'Hello world';
+  }
+  // async validateUser(dto: LoginUserRequest): Promise<any> {
+  //   const { email } = dto;
+  //   const user = await this.userService.findUser({ email });
+  //   if (!user) {
+  //     throw new NotFoundException();
+  //   }
+
+  async validateUser(username: string, pass: string): Promise<any> {
+    const user = await this.userService.findOne(username);
+    if (user && user.password === pass) {
+      const { password, ...result } = user;
+      const accessToken = this.jwtService.sign({ sub: result.id, username: result.name });
+      return { accessToken };
     }
-
-    await bcryptServices.compare(dto.password, user.password);
-    const { password, ...result } = user;
-    return result;
+    return null;
+    //
+    // await bcryptServices.compare(dto.password, user.password);
+    // const { password, ...result } = user;
+    // return result;
   }
 
-  async login(dto: LoginUserRequest): Promise<any> {
-    const user = await this.validateUser(dto);
-    const { id, role, stars, ...rest } = user;
-    const payload = { id };
-    return {
-      ...rest,
-      token: this.jwtService.sign(payload),
-    };
-  }
+  // async login(dto: LoginUserRequest): Promise<any> {}
+
+  // async login(dto: LoginUserRequest): Promise<any> {
+  //   const user = await this.validateUser(dto);
+  //   const { id, role, stars, ...rest } = user;
+  //   const payload = { id };
+  //   return {
+  //     ...rest,
+  //     token: this.jwtService.sign(payload),
+  //   };
+  // }
 }
